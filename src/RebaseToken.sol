@@ -21,8 +21,8 @@ contract RebaseToken is ERC20, AccessControl {
 
     /// STATE VARIABLES ///
     uint256 private constant PRECISION_FACTOR = 1e18;
-    bytes32 private constant MINT_AND_BURN_ROLE = keccak256("MINT_AND_BURN_ROLE");
-    uint256 private s_interestRate = 5e10; // 0.00000005 * 100 = 0.000005% per second
+    bytes32 public constant MINT_AND_BURN_ROLE = keccak256("MINT_AND_BURN_ROLE");
+    uint256 private s_interestRate = (5 * PRECISION_FACTOR) / 1e8; // 5e10 -> 0.000005% per second
     mapping(address user => uint256 interestRate) private s_userInterestRate;
     mapping(address user => uint256 timestamp) private s_userLastInterestUpdatedTimestamp;
 
@@ -78,13 +78,9 @@ contract RebaseToken is ERC20, AccessControl {
     /**
      * @notice Burn the user tokens when they withdraw from the vault
      * @param from The user to burn the tokens from
-     * @param amount The amount of tokens to burn. If the amount is the maximum uint256, it will burn the entire
-     * balance to get rid of "dust".
+     * @param amount The amount of tokens to burn.
      */
     function burn(address from, uint256 amount) external onlyRole(MINT_AND_BURN_ROLE) {
-        if (amount == type(uint256).max) {
-            amount = balanceOf(from);
-        }
         _mintAccruedInterest(from);
         _burn(from, amount);
     }
@@ -160,7 +156,9 @@ contract RebaseToken is ERC20, AccessControl {
     }
 
     /**
-     * Calculate the interest accrued for the user since the last update
+     * @notice Calculate the interest accrued for the user since the last update
+     * @notice Known issue: If the user interactrs with the contract multiple times, the interest might turn into a
+     * compounding interest.
      * @param user The user address to calculate the interest for
      * @return linearInterest The interest accrued for the user since the last update
      */

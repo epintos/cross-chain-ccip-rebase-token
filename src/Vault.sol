@@ -39,10 +39,13 @@ contract Vault {
 
     /**
      * @notice Allows user to redeem rebase tokens for ETH.
+     * @notice If the amount is type(uint256).max, the user will redeem all rebase tokens.
      * @param amount The amount of rebase tokens to redeem.
      */
     function redeem(uint256 amount) external {
-        // TODO: Does burn need to return the amount for the type(uint256).max case?
+        if (amount == type(uint256).max) {
+            amount = i_rebaseToken.balanceOf(msg.sender);
+        }
         i_rebaseToken.burn(msg.sender, amount);
         (bool success,) = payable(msg.sender).call{ value: amount }("");
         if (!success) {
