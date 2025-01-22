@@ -193,4 +193,13 @@ contract RebaseToken is ERC20 {
     function getPrincipleBalanceOf(address user) external view returns (uint256) {
         return super.balanceOf(user);
     }
+
+    /**
+     * @notice Get the interest rate that is currently set for the contract. Any future depositers will receive this
+     * interest rate
+     * @return The interest rate in the contract
+     */
+    function getInterestRate() external view returns (uint256) {
+        return s_interestRate;
+    }
 }
