@@ -20,10 +20,10 @@ contract RebaseTokenPool is TokenPool {
     constructor(
         IERC20 token,
         address[] memory allowList,
-        address rnmProxy,
+        address rmnProxy,
         address router
     )
-        TokenPool(token, allowList, rnmProxy, router)
+        TokenPool(token, allowList, rmnProxy, router)
     { }
 
     /**
