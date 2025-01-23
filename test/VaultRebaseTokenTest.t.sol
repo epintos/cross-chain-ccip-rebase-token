@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.24;
 
 import { Test, console2 } from "forge-std/Test.sol";
 import { RebaseToken } from "src/RebaseToken.sol";
@@ -76,7 +76,7 @@ contract VaultRebaseTokenTest is Test {
         vm.stopPrank();
     }
 
-    function testRedeemAafterTimePassed(uint256 amount, uint256 time) public {
+    function testRedeemAfterTimePassed(uint256 amount, uint256 time) public {
         time = bound(time, 1000, HIGHER_TIME); // in seconds
         amount = bound(amount, LOWER_DEPOSIT, HIGHER_DEPOSIT);
         vm.deal(USER, amount);
@@ -85,6 +85,7 @@ contract VaultRebaseTokenTest is Test {
 
         vm.warp(block.timestamp + time);
         uint256 balanceAfterSomeTime = rebaseToken.balanceOf(USER);
+        console2.log(balanceAfterSomeTime == amount);
 
         // We need to make sure there is enought ETH for rewards
         vm.deal(OWNER, balanceAfterSomeTime - amount);
@@ -156,13 +157,14 @@ contract VaultRebaseTokenTest is Test {
 
     // mint
     function testCannotCallMintIfNotAuthorized() public {
+        uint256 interestRate = rebaseToken.getInterestRate();
         vm.startPrank(USER);
         vm.expectRevert(
             abi.encodeWithSelector(
                 IAccessControl.AccessControlUnauthorizedAccount.selector, USER, rebaseToken.MINT_AND_BURN_ROLE()
             )
         );
-        rebaseToken.mint(USER, 100);
+        rebaseToken.mint(USER, 100, interestRate);
         vm.stopPrank();
     }
 

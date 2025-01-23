@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.24;
 
 import { IRebaseToken } from "./interfaces/IRebaseToken.sol";
 
@@ -40,7 +40,8 @@ contract Vault {
 
     /**
      * @notice Allows user to redeem rebase tokens for ETH.
-     * @notice If the amount is type(uint256).max, the user will redeem all rebase tokens.
+     * @notice If the amount is type(uint256).max, the user will redeem all rebase tokens, including new interests
+     * accrued.
      * @param amount The amount of rebase tokens to redeem.
      */
     function redeem(uint256 amount) external {
