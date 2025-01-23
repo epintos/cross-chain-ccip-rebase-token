@@ -68,10 +68,11 @@ contract RebaseToken is ERC20, AccessControl {
      * minting a very small amount at the beginning to take advantage of the high interest rate.
      * @param to The user to mint the tokens to
      * @param amount The amount of tokens to mint
+     * @param userInterestRate The new interest rate for the user
      */
-    function mint(address to, uint256 amount) external onlyRole(MINT_AND_BURN_ROLE) {
+    function mint(address to, uint256 amount, uint256 userInterestRate) external onlyRole(MINT_AND_BURN_ROLE) {
         _mintAccruedInterest(to);
-        s_userInterestRate[to] = s_interestRate;
+        s_userInterestRate[to] = userInterestRate;
         _mint(to, amount);
     }
 
