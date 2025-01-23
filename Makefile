@@ -10,6 +10,7 @@ test-fork-sepolia :; @forge test --fork-url $(SEPOLIA_RPC_URL)
 
 install :
 	forge install foundry-rs/forge-std@v1.9.5 --no-commit && \
+	forge install smartcontractkit/ccip@v2.17.0-ccip1.5.16 --no-commit && \
 	forge install openzeppelin/openzeppelin-contracts@v5.2.0 --no-commit
 
 deploy-sepolia :
