@@ -9,7 +9,7 @@ import { RateLimiter } from "@ccip/contracts/src/v0.8/ccip/libraries/RateLimiter
 contract ConfigurePoolScript is Script {
     function run(
         address localPool,
-        uint64 removeChainSelector,
+        uint64 remoteChainSelector,
         address remotePool,
         address remoteToken,
         bool outbountRateLimiterIsEnabled,
