@@ -34,9 +34,7 @@ contract RebaseToken is ERC20, AccessControl, Ownable {
     /// FUNCTIONS ///
 
     // CONSTRUCTOR
-    constructor() ERC20("Rebase Token", "RBT") Ownable(msg.sender) {
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    }
+    constructor() ERC20("Rebase Token", "RBT") Ownable(msg.sender) { }
 
     // EXTERNAL FUNCTIONS
 

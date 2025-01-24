@@ -7,6 +7,7 @@ import { RebaseToken } from "src/RebaseToken.sol";
 import { Vault } from "src/Vault.sol";
 import { IRebaseToken } from "src/interfaces/IRebaseToken.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract VaultRebaseTokenTest is Test {
     RebaseToken rebaseToken;
@@ -34,11 +35,6 @@ contract VaultRebaseTokenTest is Test {
     function addRewardsToVault(uint256 rewardAmount) public {
         (bool success,) = payable(address(vault)).call{ value: rewardAmount }("");
         assertEq(success, true);
-    }
-
-    // constructor
-    function testConstructorAssignsAdminRole() public view {
-        vm.assertEq(rebaseToken.hasRole(rebaseToken.DEFAULT_ADMIN_ROLE(), OWNER), true);
     }
 
     // deposit
@@ -131,13 +127,9 @@ contract VaultRebaseTokenTest is Test {
     }
 
     // setInterestRate
-    function testCannotSetInterestRateIfNotAdmin(uint256 interestRate) public {
+    function testCannotSetInterestRateIfOwner(uint256 interestRate) public {
         vm.startPrank(USER);
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, USER, rebaseToken.DEFAULT_ADMIN_ROLE()
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, USER));
         rebaseToken.setInterestRate(interestRate);
         vm.stopPrank();
     }
