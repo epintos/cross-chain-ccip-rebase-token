@@ -4,6 +4,7 @@ pragma solidity ^0.8.24;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @title RebaseToken
@@ -14,8 +15,9 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
  * @notice Each user will own interest rate that is the global interest rate at the time of depositing.
  * @notice Known issue: Total supply is the total amount of tokens minted in the contract, without considering interests
  * accrued.
+ * @notice Contract must be Ownable for CCIP to work
  */
-contract RebaseToken is ERC20, AccessControl {
+contract RebaseToken is ERC20, AccessControl, Ownable {
     /// ERRORS ///
     error RebaseToken__InterestRateCanOnlyDecrease(uint256 oldInterestRate, uint256 newInterestRate);
 
@@ -32,7 +34,7 @@ contract RebaseToken is ERC20, AccessControl {
     /// FUNCTIONS ///
 
     // CONSTRUCTOR
-    constructor() ERC20("Rebase Token", "RBT") {
+    constructor() ERC20("Rebase Token", "RBT") Ownable(msg.sender) {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
@@ -44,7 +46,7 @@ contract RebaseToken is ERC20, AccessControl {
      * centralized on the owner.
      * @param account The account to grant the mint and burn role
      */
-    function grantMintAndBurnRole(address account) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function grantMintAndBurnRole(address account) external onlyOwner {
         _grantRole(MINT_AND_BURN_ROLE, account);
     }
 
@@ -53,7 +55,7 @@ contract RebaseToken is ERC20, AccessControl {
      * @param newInterestRate The new interest rate
      * @dev The interest rate can only decrease
      */
-    function setInterestRate(uint256 newInterestRate) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setInterestRate(uint256 newInterestRate) external onlyOwner {
         if (newInterestRate >= s_interestRate) {
             revert RebaseToken__InterestRateCanOnlyDecrease(s_interestRate, newInterestRate);
         }
